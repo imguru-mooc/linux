@@ -1,0 +1,44 @@
+cat_1.c: In function ‘main’:
+cat_1.c:8:11: error: expected ‘;’ before ‘char’
+    8 |  FILE *src
+      |           ^
+      |           ;
+    9 |  char buff[512];
+      |  ~~~~      
+cat_1.c:12:2: error: ‘src’ undeclared (first use in this function)
+   12 |  src = fopen( argv[1], "r" );
+      |  ^~~
+cat_1.c:12:2: note: each undeclared identifier is reported only once for each function it appears in
+cat_1.c: In function ‘main’:
+cat_1.c:8:11: error: expected ‘;’ before ‘char’
+    8 |  FILE *src
+      |           ^
+      |           ;
+    9 |  char buff[512];
+      |  ~~~~      
+cat_1.c:12:2: error: ‘src’ undeclared (first use in this function)
+   12 |  src = fopen( argv[1], "r" );
+      |  ^~~
+cat_1.c:12:2: note: each undeclared identifier is reported only once for each function it appears in
+cat_1.c: In function ‘main’:
+cat_1.c:8:11: error: expected ‘;’ before ‘char’
+    8 |  FILE *src
+      |           ^
+      |           ;
+    9 |  char buff[512];
+      |  ~~~~      
+cat_1.c:12:2: error: ‘src’ undeclared (first use in this function)
+   12 |  src = fopen( argv[1], "r" );
+      |  ^~~
+cat_1.c:12:2: note: each undeclared identifier is reported only once for each function it appears in
+cat_1.c: In function ‘main’:
+cat_1.c:8:11: error: expected ‘;’ before ‘char’
+    8 |  FILE *src
+      |           ^
+      |           ;
+    9 |  char buff[512];
+      |  ~~~~      
+cat_1.c:12:2: error: ‘src’ undeclared (first use in this function)
+   12 |  src = fopen( argv[1], "r" );
+      |  ^~~
+cat_1.c:12:2: note: each undeclared identifier is reported only once for each function it appears in
