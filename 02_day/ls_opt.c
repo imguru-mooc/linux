@@ -10,6 +10,11 @@
 #include <sys/sysmacros.h>
 #include <stdio.h>
 
+#define  a_option  1
+#define  l_option  2
+#define  i_option  4
+#define  R_option  8
+
 int get_width( int size )
 {
 	int i;
@@ -18,7 +23,7 @@ int get_width( int size )
 	return i;
 }
 
-void my_ls( char *path )
+void my_ls( char *path, int flags )
 {
 	DIR *dp;
 	struct stat buf;
@@ -38,8 +43,7 @@ void my_ls( char *path )
 	while( p = readdir(dp))
 	{
 		int width=0;
-		if( p->d_name[0] == '.' )
-			continue;
+
 
 		stat( p->d_name, &buf);
 
@@ -54,59 +58,78 @@ void my_ls( char *path )
 	while( p = readdir(dp))
 	{
 		char perm[] = "----------";
-		if( p->d_name[0] == '.' )
-			continue;
 
-		stat( p->d_name, &buf);
-
-		if( S_ISDIR(buf.st_mode) ) perm[0]  = 'd';
-		if( S_ISCHR(buf.st_mode) ) perm[0]  = 'c'; 
-		if( S_ISBLK(buf.st_mode) ) perm[0]  = 'b';
-		if( S_ISFIFO(buf.st_mode) ) perm[0] = 'p';
-		if( S_ISSOCK(buf.st_mode) )perm[0]  = 's';
-		if( S_ISLNK(buf.st_mode) ) perm[0]  = 'l';
-
-
-		for(i=0; i<9; i++)
-			if( (buf.st_mode>>(8-i)) & 1 )
-				perm[i+1] = rwx[i%3];
-
-		for(i=0; i<3; i++)
+		if( !(flags & a_option) )
 		{
-			if( (buf.st_mode>>(11-i)) & 1 )
-			{
-				if( perm[(i+1)*3] == '-' )
-					perm[(i+1)*3] = sst[i]-32;
-				else
-					perm[(i+1)*3] = sst[i];
-			}
+			if( p->d_name[0] == '.' )
+				continue;
 		}
 
-		printf("%s ", perm );
-		printf("%ld ", buf.st_nlink );
+		stat( p->d_name, &buf);
+		if( flags & i_option )
+			printf("%lu ", buf.st_ino);
 
-		pwd = getpwuid(buf.st_uid);
-		printf("%s ", pwd->pw_name );
+		if( flags & l_option )
+		{
+			if( S_ISDIR(buf.st_mode) ) perm[0]  = 'd';
+			if( S_ISCHR(buf.st_mode) ) perm[0]  = 'c'; 
+			if( S_ISBLK(buf.st_mode) ) perm[0]  = 'b';
+			if( S_ISFIFO(buf.st_mode) ) perm[0] = 'p';
+			if( S_ISSOCK(buf.st_mode) )perm[0]  = 's';
+			if( S_ISLNK(buf.st_mode) ) perm[0]  = 'l';
 
-		grp = getgrgid(buf.st_gid);
-		printf("%s ", grp->gr_name );
 
-		if( perm[0] == 'c' || perm[0] == 'b' )
-			printf("%3u, %3u ", major(buf.st_rdev), 
-					minor(buf.st_rdev));
-		else
-			printf("%*ld ", size_width, buf.st_size);
-		tmp = localtime( &buf.st_mtime );
-		printf("%02d월  %d %02d:%02d ", 
-			tmp->tm_mon+1, tmp->tm_mday,
-			tmp->tm_hour, tmp->tm_min);
+			for(i=0; i<9; i++)
+				if( (buf.st_mode>>(8-i)) & 1 )
+					perm[i+1] = rwx[i%3];
+
+			for(i=0; i<3; i++)
+			{
+				if( (buf.st_mode>>(11-i)) & 1 )
+				{
+					if( perm[(i+1)*3] == '-' )
+						perm[(i+1)*3] = sst[i]-32;
+					else
+						perm[(i+1)*3] = sst[i];
+				}
+			}
+
+			printf("%s ", perm );
+			printf("%ld ", buf.st_nlink );
+
+			pwd = getpwuid(buf.st_uid);
+			printf("%s ", pwd->pw_name );
+
+			grp = getgrgid(buf.st_gid);
+			printf("%s ", grp->gr_name );
+
+			if( perm[0] == 'c' || perm[0] == 'b' )
+				printf("%3u, %3u ", major(buf.st_rdev), 
+						minor(buf.st_rdev));
+			else
+				printf("%*ld ", size_width, buf.st_size);
+			tmp = localtime( &buf.st_mtime );
+			printf("%02d월  %d %02d:%02d ", 
+					tmp->tm_mon+1, tmp->tm_mday,
+					tmp->tm_hour, tmp->tm_min);
+		}
 		printf("%s\n", p->d_name);
 	}
 }
 
 int main( int argc, char **argv )
 {
-	my_ls(argv[1]);
+	int opt;
+	int flags=0;
+	while( (opt = getopt(argc, argv, "aliR" )) != -1 )
+	{
+		if( opt == 'a' ) flags |= a_option;
+		if( opt == 'l' ) flags |= l_option;
+		if( opt == 'i' ) flags |= i_option;
+		if( opt == 'R' ) flags |= R_option;
+	}
+	//printf("%x\n" , flags );
+	my_ls(argv[1], flags);
 	return 0;
 }
 #endif
